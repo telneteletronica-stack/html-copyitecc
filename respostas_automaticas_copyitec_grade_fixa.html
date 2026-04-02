@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Copy iTec • Respostas Automáticas • Grade Fixa</title>
+  <style>
+    :root{
+      --bg:#0d1117;
+      --panel:#161b22;
+      --panel-2:#1b222c;
+      --border:#30363d;
+      --text:#e6edf3;
+      --muted:#8b949e;
+      --green:#3fb950;
+      --green-soft:rgba(63,185,80,.12);
+      --orange:#d29922;
+      --orange-soft:rgba(210,153,34,.14);
+      --blue:#58a6ff;
+      --blue-soft:rgba(88,166,255,.12);
+      --red:#f85149;
+      --red-soft:rgba(248,81,73,.12);
+      --shadow:0 18px 40px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      height:100%;
+      overflow:hidden;
+      background:linear-gradient(180deg,#0b0f14 0%, #0d1117 100%);
+      color:var(--text);
+      font-family:Consolas,"SFMono-Regular",Menlo,Monaco,"Liberation Mono",monospace;
+    }
+
+    body{padding:12px}
+
+    .app{
+      height:calc(100vh - 24px);
+      display:grid;
+      grid-template-rows:auto auto 1fr;
+      gap:10px;
+    }
+
+    .card{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      min-height:0;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 16px;
+      min-height:76px;
+    }
+
+    .title{
+      font-size:clamp(22px,2vw,34px);
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:clamp(11px,.9vw,15px);
+    }
+
+    .badge{
+      padding:8px 12px;
+      border-radius:12px;
+      border:1px solid rgba(210,153,34,.35);
+      background:var(--orange-soft);
+      color:var(--orange);
+      font-size:clamp(11px,.88vw,14px);
+      white-space:nowrap;
+    }
+
+    .toolbar{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:10px;
+      min-height:190px;
+    }
+
+    .panel{
+      padding:12px;
+      display:grid;
+      gap:10px;
+      align-content:start;
+      min-height:0;
+    }
+
+    .section-title{
+      font-size:clamp(15px,1.1vw,20px);
+      font-weight:800;
+    }
+
+    .section-note{
+      color:var(--muted);
+      font-size:clamp(11px,.85vw,13px);
+      margin-top:-4px;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .field{
+      display:grid;
+      gap:6px;
+      min-height:0;
+    }
+
+    label{
+      color:var(--muted);
+      font-size:clamp(10px,.8vw,13px);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    input[type="text"], textarea{
+      width:100%;
+      border:1px solid var(--border);
+      background:#0f141b;
+      color:var(--text);
+      border-radius:14px;
+      outline:none;
+      padding:11px 13px;
+      font-family:inherit;
+    }
+
+    input[type="text"]{
+      font-size:clamp(14px,.95vw,17px);
+      height:46px;
+    }
+
+    textarea{
+      resize:none;
+      min-height:96px;
+      max-height:96px;
+      font-size:clamp(14px,.95vw,17px);
+      line-height:1.4;
+    }
+
+    input[type="text"]:focus, textarea:focus{
+      border-color:var(--blue);
+      box-shadow:0 0 0 3px rgba(88,166,255,.16);
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:none;
+      border-radius:14px;
+      padding:10px 14px;
+      font-family:inherit;
+      font-size:clamp(12px,.88vw,15px);
+      font-weight:800;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(0)}
+
+    .primary{background:var(--green-soft); color:var(--green); border:1px solid rgba(63,185,80,.35)}
+    .secondary{background:var(--blue-soft); color:var(--blue); border:1px solid rgba(88,166,255,.35)}
+    .warning{background:var(--orange-soft); color:var(--orange); border:1px solid rgba(210,153,34,.35)}
+    .danger{background:var(--red-soft); color:var(--red); border:1px solid rgba(248,81,73,.35)}
+
+    .status{
+      color:var(--green);
+      font-size:clamp(11px,.82vw,13px);
+      min-height:16px;
+    }
+
+    .editing{ color:var(--orange); }
+
+    .counter-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      color:var(--muted);
+      font-size:clamp(11px,.85vw,14px);
+    }
+
+    .list-wrap{
+      display:grid;
+      grid-template-rows:auto 1fr;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .list-head{
+      padding:10px 14px 8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      color:var(--muted);
+      font-size:clamp(11px,.85vw,14px);
+    }
+
+    .message-grid{
+      padding:0 10px 10px;
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      grid-auto-rows:1fr;
+      gap:10px;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .message-card{
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, #171c24 0%, #121820 100%);
+      border-radius:16px;
+      padding:10px;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      gap:8px;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .message-title{
+      font-size:clamp(14px,1vw,18px);
+      font-weight:800;
+      line-height:1.2;
+      color:#f0f6fc;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .message-meta{
+      color:var(--muted);
+      font-size:clamp(10px,.78vw,12px);
+      margin-top:4px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .message-text{
+      white-space:pre-wrap;
+      font-size:clamp(12px,.86vw,15px);
+      line-height:1.35;
+      color:#dce4ec;
+      border-left:3px solid rgba(63,185,80,.35);
+      padding-left:8px;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:7;
+      -webkit-box-orient:vertical;
+    }
+
+    .message-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-items:end;
+    }
+
+    .mini{
+      padding:8px 10px;
+      border-radius:12px;
+      font-size:clamp(11px,.8vw,13px);
+    }
+
+    .empty{
+      grid-column:1 / -1;
+      border:1px dashed var(--border);
+      border-radius:16px;
+      padding:20px;
+      text-align:center;
+      color:var(--muted);
+      font-size:clamp(13px,.95vw,17px);
+      background:#11161d;
+      display:grid;
+      place-items:center;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:clamp(11px,.82vw,13px);
+      line-height:1.35;
+    }
+
+    @media (max-width: 1200px){
+      .message-grid{ grid-template-columns:repeat(2, 1fr); }
+    }
+
+    @media (max-width: 900px){
+      html,body{overflow:auto}
+      .app{height:auto}
+      .toolbar{grid-template-columns:1fr}
+      .message-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card topbar">
+      <div>
+        <div class="title">Copy iTec • Respostas Automáticas</div>
+        <div class="subtitle">Mensagens visíveis lado a lado, no mesmo campo de visão, sem precisar rolar para encontrá-las.</div>
+      </div>
+      <div class="badge">Tema Linux / terminal</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="card panel">
+        <div class="section-title">Cadastro e edição</div>
+        <div class="section-note">Crie uma nova mensagem ou edite uma já existente.</div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="titleInput">Título</label>
+            <input id="titleInput" type="text" placeholder="Ex.: Confirmação de pagamento" />
+          </div>
+          <div class="field">
+            <label for="tagInput">Categoria / palavra-chave</label>
+            <input id="tagInput" type="text" placeholder="Ex.: pix, prazo, retirada" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="messageInput">Mensagem</label>
+          <textarea id="messageInput" placeholder="Digite aqui a resposta automática..."></textarea>
+        </div>
+
+        <div class="actions">
+          <button id="saveBtn" class="primary">Salvar</button>
+          <button id="updateBtn" class="warning" style="display:none;">Atualizar</button>
+          <button id="cancelEditBtn" class="secondary" style="display:none;">Cancelar</button>
+          <button id="clearBtn" class="danger">Limpar</button>
+        </div>
+
+        <div id="formStatus" class="status"></div>
+      </div>
+
+      <div class="card panel">
+        <div class="section-title">Busca rápida</div>
+        <div class="section-note">Procure por título, categoria ou conteúdo da mensagem.</div>
+
+        <div class="field">
+          <label for="searchInput">Buscar</label>
+          <input id="searchInput" type="text" placeholder="Ex.: orçamento, pronto, retirar..." />
+        </div>
+
+        <div class="counter-row">
+          <div id="totalCounter">0 cadastradas</div>
+          <div id="visibleCounter">0 visíveis</div>
+        </div>
+
+        <div class="hint">
+          As mensagens ficam sempre expostas abaixo em grade fixa. A busca só filtra o que aparece ali, sem empurrar tudo para uma área longa.
+        </div>
+      </div>
+    </div>
+
+    <div class="card list-wrap">
+      <div class="list-head">
+        <div><strong>Mensagens em destaque</strong></div>
+        <div id="copyStatus">Pronto.</div>
+      </div>
+      <div id="messageGrid" class="message-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'copyitec_respostas_grade_fixa_v2';
+    const MAX_VISIBLE = 6;
+
+    const titleInput = document.getElementById('titleInput');
+    const tagInput = document.getElementById('tagInput');
+    const messageInput = document.getElementById('messageInput');
+    const searchInput = document.getElementById('searchInput');
+
+    const saveBtn = document.getElementById('saveBtn');
+    const updateBtn = document.getElementById('updateBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const messageGrid = document.getElementById('messageGrid');
+    const formStatus = document.getElementById('formStatus');
+    const copyStatus = document.getElementById('copyStatus');
+    const totalCounter = document.getElementById('totalCounter');
+    const visibleCounter = document.getElementById('visibleCounter');
+
+    let editingId = null;
+    let messages = loadMessages();
+
+    function cryptoRandom(){
+      return (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now() + Math.random());
+    }
+
+    function getDefaultMessages(){
+      return [
+        {
+          id: cryptoRandom(),
+          title: 'Confirmação de entendimento do pedido',
+          tag: 'pedido',
+          text: 'Olá! Entendi seu pedido.\\n\\nPara dar início à produção, trabalhamos com 50% de entrada via Pix e os outros 50% na entrega.\\n\\nAssim que o pagamento da entrada for confirmado, seu material entra em fila de produção.',
+          createdAt: Date.now()
+        },
+        {
+          id: cryptoRandom(),
+          title: 'Arquivo recebido, aguardando alinhamento',
+          tag: 'fila',
+          text: 'Olá! Recebemos seu arquivo.\\n\\nAtendemos por fila de produção, então agora vamos fazer a conferência, o alinhamento do pedido e a precificação. Assim que estiver tudo certo, te avisamos por aqui.',
+          createdAt: Date.now()
+        },
+        {
+          id: cryptoRandom(),
+          title: 'Material pronto para retirada',
+          tag: 'retirada',
+          text: 'Olá! Seu material já está pronto para retirada.\\n\\nPode passar aqui dentro do nosso horário de atendimento. Qualquer dúvida, me chama por aqui.',
+          createdAt: Date.now()
+        }
+      ];
+    }
+
+    function loadMessages(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : getDefaultMessages();
+      }catch{
+        return getDefaultMessages();
+      }
+    }
+
+    function saveMessages(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+
+    function formatDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleDateString('pt-BR') + ' • ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#39;");
+    }
+
+    function clearForm(){
+      titleInput.value = '';
+      tagInput.value = '';
+      messageInput.value = '';
+      editingId = null;
+      saveBtn.style.display = 'inline-block';
+      updateBtn.style.display = 'none';
+      cancelEditBtn.style.display = 'none';
+      formStatus.textContent = '';
+      formStatus.className = 'status';
+    }
+
+    function addMessage(){
+      const title = titleInput.value.trim();
+      const tag = tagInput.value.trim();
+      const text = messageInput.value.trim();
+
+      if(!title || !text){
+        formStatus.textContent = 'Preencha o título e a mensagem.';
+        formStatus.className = 'status editing';
+        return;
+      }
+
+      messages.unshift({
+        id: cryptoRandom(),
+        title,
+        tag,
+        text,
+        createdAt: Date.now()
+      });
+
+      saveMessages();
+      render();
+      clearForm();
+      formStatus.textContent = 'Mensagem salva com sucesso.';
+    }
+
+    function startEdit(id){
+      const msg = messages.find(m => m.id === id);
+      if(!msg) return;
+
+      titleInput.value = msg.title;
+      tagInput.value = msg.tag || '';
+      messageInput.value = msg.text;
+      editingId = id;
+
+      saveBtn.style.display = 'none';
+      updateBtn.style.display = 'inline-block';
+      cancelEditBtn.style.display = 'inline-block';
+      formStatus.textContent = 'Modo de edição ativo.';
+      formStatus.className = 'status editing';
+      titleInput.focus();
+    }
+
+    function updateMessage(){
+      if(!editingId) return;
+
+      const title = titleInput.value.trim();
+      const tag = tagInput.value.trim();
+      const text = messageInput.value.trim();
+
+      if(!title || !text){
+        formStatus.textContent = 'Preencha o título e a mensagem.';
+        formStatus.className = 'status editing';
+        return;
+      }
+
+      const idx = messages.findIndex(m => m.id === editingId);
+      if(idx === -1) return;
+
+      messages[idx] = {
+        ...messages[idx],
+        title,
+        tag,
+        text,
+        updatedAt: Date.now()
+      };
+
+      saveMessages();
+      render();
+      clearForm();
+      formStatus.textContent = 'Mensagem atualizada com sucesso.';
+    }
+
+    function deleteMessage(id){
+      const msg = messages.find(m => m.id === id);
+      if(!msg) return;
+
+      const ok = confirm(`Excluir a mensagem "${msg.title}"?`);
+      if(!ok) return;
+
+      messages = messages.filter(m => m.id !== id);
+      saveMessages();
+      render();
+
+      if(editingId === id){
+        clearForm();
+      }
+    }
+
+    async function copyMessage(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        copyStatus.textContent = 'Mensagem copiada.';
+        copyStatus.style.color = 'var(--green)';
+      }catch{
+        copyStatus.textContent = 'Não foi possível copiar automaticamente.';
+        copyStatus.style.color = 'var(--orange)';
+      }
+    }
+
+    function getFilteredMessages(){
+      const q = searchInput.value.trim().toLowerCase();
+      if(!q) return messages;
+
+      return messages.filter(m =>
+        (m.title || '').toLowerCase().includes(q) ||
+        (m.tag || '').toLowerCase().includes(q) ||
+        (m.text || '').toLowerCase().includes(q)
+      );
+    }
+
+    function render(){
+      const filtered = getFilteredMessages();
+      const visible = filtered.slice(0, MAX_VISIBLE);
+
+      totalCounter.textContent = `${messages.length} cadastradas`;
+      visibleCounter.textContent = `${visible.length} em tela`;
+
+      if(visible.length === 0){
+        messageGrid.innerHTML = '<div class="empty">Nenhuma mensagem encontrada com essa busca.</div>';
+        return;
+      }
+
+      messageGrid.innerHTML = visible.map(msg => `
+        <div class="message-card">
+          <div>
+            <div class="message-title">${escapeHtml(msg.title)}</div>
+            <div class="message-meta">
+              ${msg.tag ? 'Categoria: ' + escapeHtml(msg.tag) + ' • ' : ''}
+              ${msg.updatedAt ? 'Editada em ' + formatDate(msg.updatedAt) : 'Criada em ' + formatDate(msg.createdAt)}
+            </div>
+          </div>
+
+          <div class="message-text">${escapeHtml(msg.text)}</div>
+
+          <div class="message-actions">
+            <button class="primary mini" onclick="copyById('${msg.id}')">Copiar</button>
+            <button class="secondary mini" onclick="editById('${msg.id}')">Editar</button>
+            <button class="danger mini" onclick="deleteById('${msg.id}')">Excluir</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.copyById = function(id){
+      const msg = messages.find(m => m.id === id);
+      if(msg) copyMessage(msg.text);
+    }
+
+    window.editById = function(id){
+      startEdit(id);
+    }
+
+    window.deleteById = function(id){
+      deleteMessage(id);
+    }
+
+    saveBtn.addEventListener('click', addMessage);
+    updateBtn.addEventListener('click', updateMessage);
+    cancelEditBtn.addEventListener('click', clearForm);
+    clearBtn.addEventListener('click', clearForm);
+    searchInput.addEventListener('input', render);
+
+    render();
+  </script>
+</body>
+</html>
